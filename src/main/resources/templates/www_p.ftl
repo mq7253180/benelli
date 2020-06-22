@@ -5,6 +5,6 @@
 		<title>Benelli</title>
 	</head>
 	<body>
-		<font color="blue">WWW内容</font>
+		<font color="blue">你好，${session.user.name?if_exists}同学！${pathVal}， ${param}</font>
 	</body>
 </html>

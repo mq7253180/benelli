@@ -1,11 +1,22 @@
 package com.quincy.benelli.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.quincy.auth.annotation.LoginRequired;
 import com.quincy.auth.annotation.PermissionNeeded;
+import com.quincy.auth.o.DSession;
+import com.quincy.benelli.service.BenelliService;
+import com.quincy.sdk.annotation.JedisInjector;
+
+import redis.clients.jedis.Jedis;
 
 @Controller
 @RequestMapping("/xxx")
@@ -31,10 +42,22 @@ public class XxxController {
 		return result;
 	}
 
+	@Autowired
+	private BenelliService benelliService;
+
+	@JedisInjector
 	@PermissionNeeded("ppp")
-	@RequestMapping("/ppp")
-	public String ppp() {
-		return "www";
+	@RequestMapping("/ppp/{pathval}")
+	public ModelAndView ppp(@PathVariable(required = true, name = "pathval")String pathVal, 
+			@RequestParam(required = true, value = "param")String param, 
+			HttpServletRequest request, 
+			DSession session, 
+			Jedis jedis) {
+		benelliService.foo(null);
+		return new ModelAndView("www")
+				.addObject("session", session)
+				.addObject("pathVal", pathVal)
+				.addObject("param", param);
 	}
 
 	@PermissionNeeded("ppp")
