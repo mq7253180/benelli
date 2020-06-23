@@ -30,8 +30,8 @@ public class XxxController {
 	@LoginRequired
 	@RequestMapping("/zzz")
 	@ResponseBody
-	public String zzz() {
-		return "zzz";
+	public String zzz(DSession session) {
+		return "你好，"+session.getUser().getName();
 	}
 
 	@RequestMapping("/ttt")
