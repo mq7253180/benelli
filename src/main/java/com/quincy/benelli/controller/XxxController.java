@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.quincy.auth.annotation.LoginRequired;
 import com.quincy.auth.annotation.PermissionNeeded;
-import com.quincy.auth.o.DSession;
+import com.quincy.auth.o.XSession;
 import com.quincy.benelli.service.BenelliService;
 import com.quincy.sdk.annotation.JedisInjector;
 
@@ -30,7 +30,7 @@ public class XxxController {
 	@LoginRequired
 	@RequestMapping("/zzz")
 	@ResponseBody
-	public String zzz(DSession session) {
+	public String zzz(XSession session) {
 		return "你好，"+session.getUser().getName();
 	}
 
@@ -51,7 +51,7 @@ public class XxxController {
 	public ModelAndView ppp(@PathVariable(required = true, name = "pathval")String pathVal, 
 			@RequestParam(required = true, value = "param")String param, 
 			HttpServletRequest request, 
-			DSession session, 
+			XSession session, 
 			Jedis jedis) {
 		benelliService.foo(null);
 		return new ModelAndView("www")
