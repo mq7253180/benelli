@@ -14,6 +14,7 @@ import com.quincy.auth.annotation.LoginRequired;
 import com.quincy.auth.annotation.PermissionNeeded;
 import com.quincy.auth.o.XSession;
 import com.quincy.benelli.service.BenelliService;
+import com.quincy.o.AttributeKeys;
 import com.quincy.o.MyParams;
 import com.quincy.sdk.annotation.JedisInjector;
 
@@ -55,7 +56,7 @@ public class XxxController {
 			XSession session, 
 			Jedis jedis) {
 		benelliService.foo(null);
-		MyParams myParams = (MyParams)session.getUser().getAttributes().get("myParams");
+		MyParams myParams = (MyParams)session.getUser().getAttributes().get(AttributeKeys.MY_PARAMS);
 		return new ModelAndView("www")
 				.addObject("session", session)
 				.addObject("pathVal", pathVal)
