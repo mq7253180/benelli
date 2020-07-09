@@ -11,6 +11,7 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -99,14 +100,14 @@ public class AmqpController {
 		log.info("CONSUMER_TAG================{}", consumerTag);
 	}
 
-	@RequestMapping("/pull")
+	@RequestMapping("/pull/{index}")
 	@ResponseBody
-	public String pull() throws IOException, TimeoutException {
+	public String pull(@PathVariable(required = true, name = "index")int index) throws IOException, TimeoutException {
 		Channel channel = null;
 		Long deliveryTag = null;
 		try {
 			channel = conn.createChannel(2);
-			GetResponse response = channel.basicGet(QUEUE_NAMES[0], false);
+			GetResponse response = channel.basicGet(QUEUE_NAMES[index], false);
 			if(response!=null) {
 				log.warn("MESSAGE_COUNT==============={}", response.getMessageCount());
 				Envelope envelope = response.getEnvelope();
