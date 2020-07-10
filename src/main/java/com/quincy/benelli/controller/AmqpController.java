@@ -112,7 +112,7 @@ public class AmqpController {
                 channel.basicAck(deliveryTag, false);
 			}
 		};
-		consumerTag = channel.basicConsume(QUEUE_NAMES[1], false, consumer);//Push模式: autoAck: 是否自动确认消息, true自动确认, false不自动要手动调用
+		consumerTag = channel.basicConsume(QUEUE_NAMES[1], false, consumer);
 		log.info("CONSUMER_TAG_CHANNEL2================{}", consumerTag);
 	}
 
