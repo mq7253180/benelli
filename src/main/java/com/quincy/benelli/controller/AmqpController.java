@@ -39,6 +39,8 @@ public class AmqpController {
 	private String password;
 	private static Connection conn = null;
 	private static Channel channel = null;
+	private static Connection conn2 = null;
+	private static Channel channel2 = null;
 	private final static String EXCHANGE_NAME_PREFIX = "benelli.";
 	private final static String[] EXCHANGE_NAMES = {EXCHANGE_NAME_PREFIX+"direct", EXCHANGE_NAME_PREFIX+"fanout", EXCHANGE_NAME_PREFIX+"topic"};
 	private final static String QUEUE_NAME_PREFIX = "benelli.test.";
@@ -76,6 +78,8 @@ public class AmqpController {
 		log.info("DEFAULT_RQBBITMQ_PORT================{}", connectionFactory.getPort());
 		conn = connectionFactory.newConnection();
 		channel = conn.createChannel(1);
+		conn2 = connectionFactory.newConnection();
+		channel2 = conn2.createChannel(2);
 		for(int i=0;i<EXCHANGE_NAMES.length;i++) {
 			String exchangeName = EXCHANGE_NAMES[i];
 			RoutingKeyGetter routingKeyGetter = ROUTING_KEY_GETTERS[i];
@@ -98,6 +102,18 @@ public class AmqpController {
 		};
 		String consumerTag = channel.basicConsume(QUEUE_NAMES[1], false, consumer);//Push模式: autoAck: 是否自动确认消息, true自动确认, false不自动要手动调用
 		log.info("CONSUMER_TAG================{}", consumerTag);
+
+		consumer = new DefaultConsumer(channel2) {
+			@Override
+			public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
+				super.handleDelivery(consumerTag, envelope, properties, body);
+				log.warn("CONSUMER_MSG_CHANNEL2======================={}", new String(body, "UTF-8"));
+                long deliveryTag = envelope.getDeliveryTag();
+                channel.basicAck(deliveryTag, false);
+			}
+		};
+		consumerTag = channel.basicConsume(QUEUE_NAMES[1], false, consumer);//Push模式: autoAck: 是否自动确认消息, true自动确认, false不自动要手动调用
+		log.info("CONSUMER_TAG_CHANNEL2================{}", consumerTag);
 	}
 
 	@RequestMapping("/pull/{index}")
@@ -165,6 +181,10 @@ public class AmqpController {
 			}
 			if(conn!=null)
 				conn.close();
+			if(channel!=null)
+				channel2.close();
+			if(conn2!=null)
+				conn2.close();
 			log.warn("========================AMQP RELEASED");
 		} catch (Exception e) {
 			log.error("AMQP_ERR: ", e);
