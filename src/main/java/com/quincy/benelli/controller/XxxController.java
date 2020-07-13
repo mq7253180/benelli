@@ -40,7 +40,7 @@ public class XxxController {
 	@ResponseBody
 	public Result ttt() {
 		Result result = new Result();
-		result.setContent("tttxxxx");
+		result.setContent("BENELLI");
 		return result;
 	}
 
