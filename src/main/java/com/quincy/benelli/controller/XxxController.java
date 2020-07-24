@@ -47,6 +47,17 @@ public class XxxController {
 		return jedis.get(k);
 	}
 
+	@JedisInjector(transactional = true)
+	@RequestMapping("/redis/set2")
+	@ResponseBody
+	public String testRedis2(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "v")String v, @RequestParam(required = true, value = "e")int e, Jedis jedis) {
+		String status = jedis.set(k, v);
+		if(true)
+			throw new RuntimeException("Redis Test");
+		jedis.expire(k, e);
+		return status;
+	}
+
 	@LoginRequired
 	@RequestMapping("/www")
 	public String www() {
