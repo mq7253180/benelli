@@ -16,6 +16,7 @@ import com.quincy.auth.o.XSession;
 import com.quincy.benelli.service.BenelliService;
 import com.quincy.o.AttributeKeys;
 import com.quincy.o.MyParams;
+import com.quincy.sdk.RedisProcessor;
 import com.quincy.sdk.annotation.JedisInjector;
 
 import redis.clients.jedis.Jedis;
@@ -23,6 +24,29 @@ import redis.clients.jedis.Jedis;
 @Controller
 @RequestMapping("/xxx")
 public class XxxController {
+	@Autowired
+	private RedisProcessor redisProcessor;
+
+	@RequestMapping("/redis/set")
+	@ResponseBody
+	public String testRedis(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "v")String v, @RequestParam(required = true, value = "e")int e) {
+		return redisProcessor.setAndExpire(k, v, e);
+	}
+
+	@JedisInjector
+	@RequestMapping("/redis/expire")
+	@ResponseBody
+	public long testRedis(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "e")int e, Jedis jedis) {
+		return jedis.expire(k, e);
+	}
+
+	@JedisInjector
+	@RequestMapping("/redis/get")
+	@ResponseBody
+	public String testRedis(@RequestParam(required = true, value = "k")String k, Jedis jedis) {
+		return jedis.get(k);
+	}
+
 	@LoginRequired
 	@RequestMapping("/www")
 	public String www() {
