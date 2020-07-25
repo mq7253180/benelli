@@ -1,5 +1,7 @@
 package com.quincy.benelli.controller;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import com.quincy.sdk.RedisProcessor;
 import com.quincy.sdk.annotation.JedisInjector;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 
 @Controller
 @RequestMapping("/xxx")
@@ -50,11 +54,15 @@ public class XxxController {
 	@JedisInjector(transactional = true)
 	@RequestMapping("/redis/set2")
 	@ResponseBody
-	public String testRedis2(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "v")String v, @RequestParam(required = true, value = "e")int e, Jedis jedis) {
-		String status = jedis.set(k, v);
-		if(true)
-			throw new RuntimeException("Redis Test");
-		jedis.expire(k, e);
+	public String testRedis2(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "v")String v, @RequestParam(required = true, value = "e")int e, Jedis jedis, Transaction tx) throws IOException {
+//		String status = jedis.set(k, v);
+		Response<String> response = tx.set(k, v);
+//		String status = response.get();
+		String status = "OOKK";
+//		if(true)
+//			throw new RuntimeException("Redis Test");
+//		jedis.expire(k, e);
+		tx.expire(k, e);
 		return status;
 	}
 
