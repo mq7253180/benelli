@@ -1,6 +1,7 @@
 package com.quincy.benelli.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,7 @@ public class XxxController {
 
 	@RequestMapping("/redis/set2")
 	@ResponseBody
-	public String testRedis2(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "v")String v, @RequestParam(required = true, value = "e")int e) throws IOException {
+	public String testRedis2(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "v")String v, @RequestParam(required = true, value = "e")int e) throws IOException, SQLException {
 		return benelliService.setRedis(k, v, e
 //				, null
 				, null
