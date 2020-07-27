@@ -1,17 +1,34 @@
 package com.quincy.benelli.service.impl;
 
+import java.io.IOException;
+
 import org.springframework.stereotype.Service;
 
 import com.quincy.benelli.service.BenelliService;
-import com.quincy.sdk.annotation.JedisInjector;
+import com.quincy.sdk.annotation.JedisSupport;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 
 @Service
 public class BenelliServiceImpl implements BenelliService {
-	@JedisInjector
+	@JedisSupport(transactional = true, rollbackFor = {IOException.class})
+//	@JedisInjector
 	@Override
-	public void foo(Jedis jedis) {
-		System.out.println("===========BENELLI_SERVICE");
+	public String setRedis(String k, String v, int e
+			, Transaction tx
+//			, JedisCluster jedisCluster
+			, Jedis jedis) throws IOException {
+//		String status = jedis.set(k, v);
+		Response<String> response = tx.set(k, v);
+//		String status = response.get();
+		String status = "OOKK";
+//		if(true)
+//			throw new IOException("Redis Test");
+//		jedis.expire(k, e);
+		tx.expire(k, e);
+		return status;
 	}
 }

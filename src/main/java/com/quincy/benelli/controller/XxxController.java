@@ -2,34 +2,28 @@ package com.quincy.benelli.controller;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.quincy.auth.annotation.LoginRequired;
 import com.quincy.auth.annotation.PermissionNeeded;
 import com.quincy.auth.o.XSession;
 import com.quincy.benelli.service.BenelliService;
-import com.quincy.o.AttributeKeys;
-import com.quincy.o.MyParams;
 import com.quincy.sdk.RedisProcessor;
-import com.quincy.sdk.annotation.JedisInjector;
+import com.quincy.sdk.annotation.JedisSupport;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
 
 @Controller
 @RequestMapping("/xxx")
 public class XxxController {
 	@Autowired
 	private RedisProcessor redisProcessor;
+	@Autowired
+	private BenelliService benelliService;
 
 	@RequestMapping("/redis/set")
 	@ResponseBody
@@ -37,33 +31,34 @@ public class XxxController {
 		return redisProcessor.setAndExpire(k, v, e);
 	}
 
-	@JedisInjector
+	@JedisSupport
 	@RequestMapping("/redis/expire")
 	@ResponseBody
 	public long testRedis(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "e")int e, Jedis jedis) {
 		return jedis.expire(k, e);
 	}
 
-	@JedisInjector
+	@JedisSupport
 	@RequestMapping("/redis/get")
 	@ResponseBody
 	public String testRedis(@RequestParam(required = true, value = "k")String k, Jedis jedis) {
 		return jedis.get(k);
 	}
 
-	@JedisInjector(transactional = true)
 	@RequestMapping("/redis/set2")
 	@ResponseBody
-	public String testRedis2(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "v")String v, @RequestParam(required = true, value = "e")int e, Jedis jedis, Transaction tx) throws IOException {
-//		String status = jedis.set(k, v);
-		Response<String> response = tx.set(k, v);
-//		String status = response.get();
-		String status = "OOKK";
-//		if(true)
-//			throw new RuntimeException("Redis Test");
-//		jedis.expire(k, e);
-		tx.expire(k, e);
-		return status;
+	public String testRedis2(@RequestParam(required = true, value = "k")String k, @RequestParam(required = true, value = "v")String v, @RequestParam(required = true, value = "e")int e) throws IOException {
+		return benelliService.setRedis(k, v, e
+//				, null
+				, null
+				, null);
+	}
+
+	@JedisSupport
+	@RequestMapping("/redis/null")
+	@ResponseBody
+	public Long testRedis3(@RequestParam(required = true, value = "k")String k, Jedis jedis) {
+		return jedis.del(k);
 	}
 
 	@LoginRequired
@@ -85,26 +80,6 @@ public class XxxController {
 		Result result = new Result();
 		result.setContent("BENELLI");
 		return result;
-	}
-
-	@Autowired
-	private BenelliService benelliService;
-
-	@JedisInjector
-	@PermissionNeeded("ppp")
-	@RequestMapping("/ppp/{pathval}")
-	public ModelAndView ppp(@PathVariable(required = true, name = "pathval")String pathVal, 
-			@RequestParam(required = true, value = "param")String param, 
-			HttpServletRequest request, 
-			XSession session, 
-			Jedis jedis) {
-		benelliService.foo(null);
-		MyParams myParams = (MyParams)session.getUser().getAttributes().get(AttributeKeys.MY_PARAMS);
-		return new ModelAndView("www")
-				.addObject("session", session)
-				.addObject("pathVal", pathVal)
-				.addObject("param", param)
-				.addObject("attr", myParams.getXxx());
 	}
 
 	@PermissionNeeded("ppp")
