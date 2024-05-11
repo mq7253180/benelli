@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.quincy</groupId>
+	<artifactId>benelli</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Benelli</name>
+	<description>Benelli</description>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.0.5</version>
+		<relativePath/><!-- lookup parent from repository -->
+	</parent>
+	<properties>
+		<argLine>-Dfile.encoding=UTF-8</argLine>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<version.spring-cloud>4.0.2</version.spring-cloud>
+	</properties>
+	<repositories>
+        <repository>
+            <id>aliyun</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/libs-milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<log.level>INFO</log.level>
+				<spring.pid.file>/Users/maqiang/tmp/benelli.pid</spring.pid.file>
+				<path.log.logback>/Users/maqiang/tmp/logs/benelli</path.log.logback>
+				<prefix.resource>/static</prefix.resource>
+				<spring.freemarker.cache>false</spring.freemarker.cache>
+				<env>dev</env>
+				<server.port>12090</server.port>
+				<!-- <redis.nodes>47.93.89.0:6379,47.93.89.0:6389,47.93.89.0:6399</redis.nodes> -->
+				<!-- <redis.nodes>47.93.89.0:26379,47.93.89.0:26389,47.93.89.0:26399</redis.nodes> -->
+				<redis.nodes>47.93.89.0:6379</redis.nodes>
+				<redis.pwd>foobared</redis.pwd>
+				<expire.session>10</expire.session><!-- minutes -->
+				<expire.vcode>2</expire.vcode><!-- minutes -->
+				<domain>127.0.0.1</domain><!-- 种cookie识别session, ajax跨域 -->
+				<auth.center>http://localhost:12081</auth.center>
+				<eureka.addr>47.93.89.0:8761</eureka.addr>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>pro</id>
+			<properties>
+				<log.level>WARN</log.level>
+				<spring.pid.file>/quincy/tmp/benelli.pid</spring.pid.file>
+				<path.log.logback>/quincy/tmp/logs/benelli</path.log.logback>
+				<prefix.resource>https://xxx.maqiangcgq.com/benelli</prefix.resource>
+				<spring.freemarker.cache>false</spring.freemarker.cache>
+				<env>pro</env>
+				<server.port>12091</server.port>
+				<redis.nodes>47.93.89.0:6379,47.93.89.0:6389,47.93.89.0:6399</redis.nodes>
+				<!-- <redis.nodes>47.93.89.0:26379,47.93.89.0:26389,47.93.89.0:26399</redis.nodes> -->
+				<!-- <redis.nodes>47.93.89.0:6379</redis.nodes> -->
+				<redis.pwd>foobared</redis.pwd>
+				<expire.session>60</expire.session><!-- minutes -->
+				<expire.vcode>3</expire.vcode><!-- minutes -->
+				<domain>maqiangcgq.com</domain><!-- 种cookie识别session, ajax跨域 -->
+				<auth.center>https://ducati.maqiangcgq.com</auth.center>
+				<eureka.addr>47.93.89.0:8761</eureka.addr>
+			</properties>
+		</profile>
+	</profiles>
+    <build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+					<executable>true</executable>
+					<!-- 包含引入的非maven库jar包 -->
+					<includeSystemScope>true</includeSystemScope>
+				</configuration>
+				<!-- 显示/actuator/info内容 -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<!-- <version>3.8.1</version> -->
+				<configuration>
+					<source>21</source>
+					<target>21</target>
+					<compilerVersion>21</compilerVersion>
+					<encoding>UTF-8</encoding>
+					<compilerArgument>-Xlint:deprecation</compilerArgument>
+					<!-- <compilerArguments>
+						<extdirs>${pom.basedir}/src/main/lib</extdirs>
+					</compilerArguments> -->
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-compiler-javac</artifactId>
+						<version>2.11.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>utf-8</encoding>
+					<!-- 使profile生效 -->
+					<useDefaultDelimiters>true</useDefaultDelimiters>
+				</configuration>
+			</plugin>
+		</plugins>
+		<resources>
+	        <resource>
+	            <directory>src/main/resources</directory>
+	            <filtering>true</filtering>
+			</resource>
+ 		</resources>
+	</build>
+	<dependencyManagement>
+        <dependencies>
+            <!--<dependency>
+	            <groupId>org.springframework.cloud</groupId>
+	            <artifactId>spring-cloud-dependencies</artifactId>
+	            <version>Greenwich.RELEASE</version>
+	            <type>pom</type>
+	            <scope>import</scope>
+	        </dependency>-->
+	        <dependency>
+			    <groupId>org.projectlombok</groupId>
+			    <artifactId>lombok</artifactId>
+			    <version>1.18.32</version>
+			</dependency>
+        </dependencies>
+    </dependencyManagement>
+	<dependencies>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-freemarker</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.session</groupId>
+		    <artifactId>spring-session-data-redis</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.cloud</groupId>
+		    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		    <version>4.0.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.maqiangcgq</groupId>
+		    <artifactId>quincy-redis</artifactId>
+		    <version>1.1.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.maqiangcgq</groupId>
+		    <artifactId>quincy-auth-common</artifactId>
+		    <version>1.1.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.hce</groupId>
+		    <artifactId>ducati-common-o</artifactId>
+		    <version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.rabbitmq</groupId>
+		    <artifactId>amqp-client</artifactId>
+		</dependency>
+    </dependencies>
+</project>
