@@ -9,11 +9,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.quincy.auth.annotation.EnableAnnotationAuth;
+
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800)
 @EnableMyBoot
 @EnableWebMvc
 @EnableAutoConfiguration
 @EnableScheduling
+@EnableAnnotationAuth
 @SpringBootApplication/*(exclude = {
         DataSourceAutoConfiguration.class
 })*/
